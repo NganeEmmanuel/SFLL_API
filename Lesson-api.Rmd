@@ -1,0 +1,207 @@
+---
+title: "Introduction to APIs"
+subtitle: "Building Secure, Scalable, Fault-Tolerant and Low-Latency APIs with Java & Spring Boot"
+author: "Ngane Emmanuel"
+date: "`r Sys.Date()`"
+output:
+  powerpoint_presentation:
+    slide_level: 2
+---
+
+## Series Context
+
+### What This Series Is About
+
+- Building **production-grade APIs**, not toy examples.
+- Focus areas:
+  - Security
+  - Scalability
+  - Fault Tolerance
+  - Low Latency
+- Every topic will be covered:
+  - **Theory first**
+  - **Practical implementation next**
+  - **Real vulnerabilities and fixes**
+
+---
+
+### How This Course Is Structured
+
+1. API Fundamentals  
+2. Designing a Basic API  
+3. Securing APIs  
+4. Fault Tolerance & Resilience  
+5. Performance & Low Latency  
+6. Production Best Practices  
+
+Each section:
+- Concept explanation
+- Architecture discussion
+- Hands-on coding
+- Common mistakes
+
+---
+
+## Learning Objectives
+
+By the end of this lesson, you should be able to:
+
+- Understand what an API really is.
+- Explain why APIs exist and what problems they solve.
+- Identify real-world use cases of APIs.
+- Avoid common misconceptions about APIs.
+- Build a strong mental model for future lessons.
+
+---
+
+## What Is an API?
+
+### Simple Definition
+
+**API** stands for **Application Programming Interface**.
+
+An API is a way for **software systems to communicate with each other** in a structured and predictable way.
+
+Think of it as a **contract** between two systems:
+- One system provides data or functionality.
+- Another system consumes it.
+
+---
+
+### Everyday Analogy
+
+Imagine a restaurant:
+
+- You (client) → place an order.
+- Waiter (API) → takes your request.
+- Kitchen (server/business logic) → prepares the food.
+- Waiter → brings back the result.
+
+You don’t go into the kitchen yourself.
+You interact only through the waiter (API).
+
+---
+
+### Technical Definition
+
+An API defines:
+
+- What requests are allowed.
+- What data format is expected.
+- What responses will be returned.
+- What errors may occur.
+
+In web systems, APIs commonly use:
+- HTTP
+- JSON or XML
+- Standard methods like GET, POST, PUT, DELETE
+
+---
+
+### What an API Is NOT
+
+- ❌ Not just a database.
+- ❌ Not just a website.
+- ❌ Not just a single endpoint.
+- ❌ Not only backend code.
+
+An API is a **communication layer and contract** between systems.
+
+---
+
+## Why Do APIs Exist?
+
+### The Core Problem
+
+Modern software is not a single application anymore.
+
+We have:
+- Mobile apps
+- Web apps
+- Microservices
+- Third-party integrations
+- Cloud services
+
+All these systems must talk to each other reliably.
+
+---
+
+### Without APIs
+
+Without APIs:
+
+- Systems would be tightly coupled.
+- Every change breaks multiple applications.
+- No standard way to communicate.
+- Hard to scale or secure.
+- Integration becomes fragile and slow.
+
+---
+
+### With APIs
+
+APIs provide:
+
+- Clear communication contracts
+- Loose coupling between systems
+- Reusability of services
+- Scalability
+- Security boundaries
+- Technology independence
+
+---
+
+### Real-World Examples
+
+- A mobile app fetching user data from a backend.
+- A payment service charging a credit card.
+- A weather app pulling forecast data.
+- A frontend dashboard displaying analytics from a backend service.
+
+All these rely on APIs.
+
+---
+
+### Beginner Example
+
+Example API call:
+
+```{text}
+GET /api/users/123
+```
+
+Response:
+
+```{json}
+{
+  "id": 123,
+  "name": "Alice",
+  "email": "alice@example.com"
+}
+```
+
+
+Your application doesn’t care how the data was fetched internally.
+It only cares about the contract.
+
+---
+
+## Key Takeaways So Far
+
+* An API enables communication between software systems.
+* It defines rules, data formats, and behavior.
+* APIs solve coupling, scalability, and integration problems.
+* APIs act as a contract between producers and consumers.
+
+---
+
+## Next Section Preview
+
+In the next section we will cover:
+
+* Types of APIs
+* Why different API styles exist
+* When to use each type
+* Common misconceptions
+
+```
