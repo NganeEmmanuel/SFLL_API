@@ -1,5 +1,5 @@
 ---
-title: "Introduction to APIs: Types of APIa"
+title: "API Security Fundamentals"
 subtitle: "Building Secure, Scalable, Fault-Tolerant and Low-Latency APIs with Java & Spring Boot"
 author: "Ngane Emmanuel"
 date: "`r Sys.Date()`"
@@ -8,392 +8,239 @@ output:
     slide_level: 2
 ---
 
-## Types of APIs
+## Lesson Context
 
-### Why Are There Different Types of APIs?
+### Where We Are in the Series
 
-Different systems have different needs:
+- ✅ What is an API
+- ✅ API architecture
+- ✅ Built a basic Spring Boot API
+- 🚨 Now we secure it
 
-- Performance requirements
-- Data complexity
-- Real-time communication
-- Scalability
-- Ease of development
-- Compatibility with existing tools
-
-No single API style solves all problems perfectly.
+We intentionally start with a simple, insecure system.
 
 ---
 
-### Public APIs (Open APIs)
+## Why This Matters
 
-- Exposed to external developers.
-- Used by third-party applications.
-- Usually secured with API keys, OAuth, or tokens.
+Most security breaches:
+- Are not advanced hacks
+- Are basic mistakes
+- Are preventable
+- Come from poor design decisions
 
-Examples:
-- Payment gateways
-- Weather services
-- Maps services
-- Social media APIs
+Security is not a feature.
+It is a **system property**.
 
-Characteristics:
-- High security requirements
-- Strong documentation
+---
+
+## What Is API Security?
+
+### Definition
+
+API Security is the practice of protecting:
+
+- Data
+- Users
+- Infrastructure
+- Business logic
+- Availability
+
+from unauthorized access, abuse, or manipulation.
+
+---
+
+## What We Are Protecting
+
+- 🔒 User data (PII - personal identifiable information, credentials)
+- 💳 Financial transactions
+- 🧠 Business logic
+- 🖥 Infrastructure resources
+- 📈 System availability
+
+APIs are high-value targets.
+
+---
+
+## Why APIs Are Attacked More Than UIs
+
+- Direct access to business logic
+- No visual barriers
+- Automation friendly
+- Often poorly monitored
+- Exposed to the internet
+
+Attackers love APIs.
+
+---
+
+## Threat Mindset
+
+### Think Like an Attacker
+
+Attackers ask:
+
+- What inputs can I control?
+- What assumptions exist?
+- What data can I manipulate?
+- What happens if I send invalid data?
+- What if I bypass validation?
+
+Security begins with curiosity.
+
+---
+
+## Attack Surface
+
+Attack surface includes:
+
+- Endpoints
+- Request parameters
+- Headers
+- Payloads
+- Authentication mechanisms
+- Dependencies
+- Configuration
+
+Every input is a potential attack vector.
+
+---
+
+## Why Security Is Hard
+
+### Complexity
+
+Modern systems have:
+
+- Multiple services
+- Third-party integrations
+- Distributed infrastructure
+- Rapid deployment cycles
+
+Complexity increases risk.
+
+---
+
+## Why Security Is Hard
+
+### Human Error
+
+- Misconfiguration
+- Weak validation
+- Hardcoded secrets
+- Copy-paste code
+- Incomplete testing
+
+Most breaches are accidental.
+
+---
+
+## Security vs Performance Tradeoff
+
+### Security Has a Cost
+
+Security adds:
+
+- Encryption overhead
+- Validation processing
+- Authentication latency
+- Logging overhead
+- Network hops
+
+---
+
+## Security vs Performance Tradeoff
+
+### The Goal Is Balance
+
+We aim for:
+
+- ✔️ Strong enough security
+- ✔️ Acceptable latency
+- ✔️ Good user experience
+- ✔️ Operational simplicity
+
+Not maximum security at all costs.
+
+---
+
+## Security vs Performance Tradeoff
+
+### Engineering Is Tradeoffs
+
+Security decisions impact:
+
+- Latency
+- Throughput
+- Complexity
+- Cost
+- Developer velocity
+
+We must measure and justify.
+
+---
+
+## Real-World Consequences
+
+### What Happens When APIs Are Insecure?
+
+- Data breaches
+- Financial loss
+- Legal penalties
+- Brand damage
+- Loss of trust
+
+Small bugs → massive damage.
+
+---
+
+## Example: Injection Attacks
+
+If user input is not validated:
+
+- Attackers inject commands
+- Bypass authentication
+- Read or modify data
+- Destroy databases
+
+We will demonstrate this practically.
+
+---
+
+## Our Security Learning Strategy
+
+### How This Series Will Teach Security
+
+For each topic:
+
+1. Understand the concept
+2. Observe a real vulnerability
+3. Perform a controlled attack
+4. Implement protection
+5. Re-test the attack
+6. Measure impact
+
+---
+
+### Topics We Will Cover
+
+- Input validation & injection
+- DTOs & mass assignment
+- Authentication
+- Authorization
+- HTTPS & TLS
 - Rate limiting
-- Monitoring
+- Secrets management
+- Logging & auditing
 
 ---
 
-### Private APIs (Internal APIs)
+## Next Lesson Preview
 
-- Used only inside an organization.
-- Connect internal services and systems.
-- Often power microservices architectures.
+### Next Video
 
-Characteristics:
-- Faster evolution
-- Controlled access
-- Less public documentation
-- Optimized for internal performance
+- Injection attacks explained
+- SQL injection demonstration
+- Why ORMs help but don’t solve everything
+- Fixing vulnerabilities properly
 
----
-
-### Partner APIs
-
-- Shared with selected partners.
-- Access is restricted and governed by contracts.
-- Used in B2B integrations.
-
-Examples:
-- Logistics integrations
-- Banking integrations
-- Enterprise data sharing
-
----
-
-## API Styles (Architectural Styles)
-
-### REST (Representational State Transfer)
-
-Most common API style on the web.
-
-Key characteristics:
-- Uses HTTP methods (GET, POST, PUT, DELETE)
-- Stateless communication
-- Resources identified by URLs
-- Uses JSON or XML payloads
-
-Example:
-```
-
-GET /api/products/10
-
-````
-
-Benefits:
-- Simple
-- Scalable
-- Cacheable
-- Widely supported
-
-Limitations:
-- Can over-fetch or under-fetch data
-- Multiple calls may be required
-
----
-
-### GraphQL
-
-Client specifies exactly what data it needs.
-
-Example query:
-```graphql
-{
-  user(id: 1) {
-    name
-    email
-  }
-}
-````
-
-Benefits:
-
-* Precise data fetching
-* Fewer network calls
-* Strong schema validation
-
-Limitations:
-
-* More complex infrastructure
-* Caching is harder
-* Learning curve
-
----
-
-### gRPC
-
-High-performance binary protocol.
-
-Characteristics:
-
-* Uses Protocol Buffers
-* Strong typing
-* Very fast serialization
-* Ideal for microservices
-
-Benefits:
-
-* Extremely fast
-* Efficient network usage
-
-Limitations:
-
-* Not human-readable
-* Browser support is limited
-* Harder debugging
-
----
-
-### WebSockets
-
-Real-time bidirectional communication.
-
-Use cases:
-
-* Chat applications
-* Live dashboards
-* Multiplayer games
-* Real-time monitoring
-
-Benefits:
-
-* Low latency
-* Continuous connection
-
-Limitations:
-
-* More complex scaling
-* Connection management overhead
-
----
-
-### When to Use What?
-
-* REST → Most web and mobile APIs
-* GraphQL → Complex data requirements
-* gRPC → High-performance internal services
-* WebSockets → Real-time systems
-
-There is no universal best choice.
-
----
-
-## API Architecture
-
-### Important Clarification
-
-An API is **not just controllers**.
-An API is a **full system composed of multiple layers** working together.
-
-Most production APIs follow a **Layered Architecture**.
-
----
-
-### Typical Layered Architecture
-
-```
-Client (Browser / Mobile App / Other Service)
-        ↓
-API Layer (Controllers)
-        ↓
-Business Logic Layer (Services)
-        ↓
-Data Access Layer (Repositories / DAOs)
-        ↓
-Database / External Services
-```
-
-Each layer has a clear responsibility.
-
----
-
-### API Layer (Controller Layer)
-
-Responsibilities:
-
-* Receives HTTP requests
-* Validates input
-* Maps requests to business logic
-* Returns HTTP responses
-* Handles status codes and errors
-
-In Spring Boot:
-
-* Annotated with `@RestController`
-* Defines endpoints
-
-This layer should be thin.
-
----
-
-### Business Logic Layer (Service Layer)
-
-Responsibilities:
-
-* Core business rules
-* Validation logic
-* Transactions
-* Orchestration of multiple repositories or services
-* Security checks (sometimes)
-
-In Spring Boot:
-
-* Annotated with `@Service`
-
-This is where most application logic lives.
-
----
-
-### Data Access Layer (Repository Layer)
-
-Responsibilities:
-
-* Interacts with the database
-* Executes queries
-* Maps entities to tables
-* Handles persistence
-
-In Spring Boot:
-
-* Annotated with `@Repository`
-* Uses JPA, JDBC, or other persistence tools
-
----
-
-### External Dependencies
-
-APIs often integrate with:
-
-* Databases
-* Message brokers
-* Caches
-* Third-party services
-* Authentication providers
-
-These dependencies must be handled carefully for reliability and performance.
-
----
-
-## MVC vs Layered Architecture
-
-### What Is MVC?
-
-MVC stands for:
-
-* Model
-* View
-* Controller
-
-It is mainly used for **UI-based web applications**.
-
----
-
-### Why MVC Is Not a Perfect Fit for APIs
-
-* APIs usually do not return views.
-* APIs return data (JSON/XML).
-* The "View" concept does not really apply.
-* Business logic should not live in controllers.
-
----
-
-### How APIs Actually Use MVC Concepts
-
-* Controller → API Layer
-* Model → Data objects (DTOs, Entities)
-* View → Not applicable in pure APIs
-
-Most APIs evolve into **Layered Architecture**, not pure MVC.
-
----
-
-### Correct Mental Model
-
-Think in layers, not screens:
-
-* API Layer
-* Business Layer
-* Data Layer
-* Infrastructure Layer
-
-This improves maintainability and scalability.
-
----
-
-## Common Misconception: Endpoints vs API
-
-### What Many People Think
-
-> "The API is just the endpoints."
-
-Example:
-
-```
-GET /users
-POST /users
-```
-
----
-
-### What the API Actually Is
-
-The API includes:
-
-* Endpoints
-* Validation rules
-* Business logic
-* Data models
-* Error handling
-* Security mechanisms
-* Documentation
-* Performance behavior
-* Reliability behavior
-
-Endpoints are just the **entry point**.
-
----
-
-### Why This Matters
-
-If you only focus on endpoints:
-
-* Security becomes weak
-* Performance suffers
-* Scalability breaks
-* Faults propagate easily
-
-Real engineering happens behind the endpoints.
-
----
-
-## Key Takeaways
-
-* APIs come in multiple styles for different needs.
-* REST is common, but not the only choice.
-* APIs use layered architecture.
-* MVC is not the same as API architecture.
-* Endpoints are only part of an API.
-
----
-
-## What Comes Next
-
-Next video:
-
-* Designing a very basic API
-* Understanding controllers, services, repositories
-* Creating a minimal Spring Boot project
-* Seeing how layers interact
-
-```
