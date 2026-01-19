@@ -1,5 +1,5 @@
 ---
-title: "API Security Fundamentals"
+title: "Authentication Fundamentals for APIs: Identity, Trust and Access Control"
 subtitle: "Building Secure, Scalable, Fault-Tolerant and Low-Latency APIs with Java & Spring Boot"
 author: "Ngane Emmanuel"
 date: "`r Sys.Date()`"
@@ -10,237 +10,317 @@ output:
 
 ## Lesson Context
 
-### Where We Are in the Series
+### Where We Are
 
-- ✅ What is an API
-- ✅ API architecture
-- ✅ Built a basic Spring Boot API
-- 🚨 Now we secure it
+- ✅ Built a basic API
+- ✅ Learned injection attacks
+- ✅ Secured object binding with DTOs
+- 🚨 Now we control identity and access
 
-We intentionally start with a simple, insecure system.
-
----
-
-## Why This Matters
-
-Most security breaches:
-- Are not advanced hacks
-- Are basic mistakes
-- Are preventable
-- Come from poor design decisions
-
-Security is not a feature.
-It is a **system property**.
+Authentication answers the question:
+> Who is making this request?
 
 ---
 
-## What Is API Security?
+## Learning Objectives
 
-### Definition
+By the end of this lesson:
 
-API Security is the practice of protecting:
-
-- Data
-- Users
-- Infrastructure
-- Business logic
-- Availability
-
-from unauthorized access, abuse, or manipulation.
+- Understand authentication concepts.
+- Differentiate authentication vs authorization.
+- Learn common authentication approaches.
+- Understand password security basics.
+- Learn token-based authentication concepts.
+- Understand tradeoffs and risks.
 
 ---
 
-## What We Are Protecting
+## Authentication vs Authorization
 
-- 🔒 User data (PII - personal identifiable information, credentials)
-- 💳 Financial transactions
-- 🧠 Business logic
-- 🖥 Infrastructure resources
-- 📈 System availability
+### Authentication
 
-APIs are high-value targets.
+Authentication answers:
+> Who are you?
 
----
+**Examples**:
+- Username + password
+- Token
+- Certificate
+- Biometric
 
-## Why APIs Are Attacked More Than UIs
+### Authorization
 
-- Direct access to business logic
-- No visual barriers
-- Automation friendly
-- Often poorly monitored
-- Exposed to the internet
+Authorization answers:
+> What are you allowed to do?
 
-Attackers love APIs.
-
----
-
-## Threat Mindset
-
-### Think Like an Attacker
-
-Attackers ask:
-
-- What inputs can I control?
-- What assumptions exist?
-- What data can I manipulate?
-- What happens if I send invalid data?
-- What if I bypass validation?
-
-Security begins with curiosity.
+**Examples**:
+- Roles
+- Permissions
+- Policies
 
 ---
 
-## Attack Surface
+## Common Confusion
 
-Attack surface includes:
+Authentication and authorization solve different problems.
 
-- Endpoints
-- Request parameters
-- Headers
-- Payloads
-- Authentication mechanisms
-- Dependencies
-- Configuration
+- Authentication answers: **Who are you?**
+- Authorization answers: **What are you allowed to do?**
 
-Every input is a potential attack vector.
+You must authenticate first before authorization can be evaluated.
+
+**Example**:
+- User logs in → identity is verified (authentication)
+- System checks role → access is granted or denied (authorization)
+
+Mixing these concepts leads to insecure designs.
+---
+
+## Why APIs Need Authentication
+
+### What Happens Without Authentication
+
+- Anyone can call endpoints.
+- Data exposure.
+- Abuse and automation.
+- No accountability.
+- No audit trail.
+
+Public APIs still require identity tracking.
 
 ---
 
-## Why Security Is Hard
+## Trust Boundaries
 
-### Complexity
+Authentication establishes:
 
-Modern systems have:
-
-- Multiple services
-- Third-party integrations
-- Distributed infrastructure
-- Rapid deployment cycles
-
-Complexity increases risk.
+- Identity
+- Trust level
+- Accountability
+- Traceability
 
 ---
 
-## Why Security Is Hard
+## Common Authentication Models
 
-### Human Error
+### Basic Authentication
 
-- Misconfiguration
-- Weak validation
-- Hardcoded secrets
-- Copy-paste code
-- Incomplete testing
+- Username and password sent with every request.
+- Simple but insecure unless HTTPS is enforced.
 
-Most breaches are accidental.
-
----
-
-## Security vs Performance Tradeoff
-
-### Security Has a Cost
-
-Security adds:
-
-- Encryption overhead
-- Validation processing
-- Authentication latency
-- Logging overhead
-- Network hops
+**Limitations**:
+- Credentials exposed frequently.
+- Hard to revoke.
+- Poor scalability.
 
 ---
 
-## Security vs Performance Tradeoff
+## Common Authentication Models
 
-### The Goal Is Balance
+### Session-Based Authentication
 
-We aim for:
+- Server stores session state.
+- Client stores session ID (cookie).
+- Common in traditional web apps.
 
-- ✔️ Strong enough security
-- ✔️ Acceptable latency
-- ✔️ Good user experience
-- ✔️ Operational simplicity
-
-Not maximum security at all costs.
-
----
-
-## Security vs Performance Tradeoff
-
-### Engineering Is Tradeoffs
-
-Security decisions impact:
-
-- Latency
-- Throughput
-- Complexity
-- Cost
-- Developer velocity
-
-We must measure and justify.
+**Limitations**:
+- Harder to scale horizontally.
+- Requires sticky sessions or shared cache.
 
 ---
 
-## Real-World Consequences
+## Common Authentication Models
 
-### What Happens When APIs Are Insecure?
+### Token-Based Authentication
 
-- Data breaches
-- Financial loss
-- Legal penalties
-- Brand damage
-- Loss of trust
+- Server issues a token after login.
+- Client sends token on each request.
+- Server validates token.
 
-Small bugs → massive damage.
+**Common types**:
+- JWT
+- OAuth access tokens
 
----
-
-## Example: Injection Attacks
-
-If user input is not validated:
-
-- Attackers inject commands
-- Bypass authentication
-- Read or modify data
-- Destroy databases
-
-We will demonstrate this practically.
+**Benefits**:
+- Stateless
+- Scalable
+- Cloud friendly
 
 ---
 
-## Our Security Learning Strategy
+## Common Authentication Models
 
-### How This Series Will Teach Security
+### API Keys
 
-For each topic:
+- Static keys per client.
+- Used mostly for service-to-service or public APIs.
 
-1. Understand the concept
-2. Observe a real vulnerability
-3. Perform a controlled attack
-4. Implement protection
-5. Re-test the attack
-6. Measure impact
-
----
-
-### Topics We Will Cover
-
-- Input validation & injection
-- DTOs & mass assignment
-- Authentication
-- Authorization
-- HTTPS & TLS
-- Rate limiting
-- Secrets management
-- Logging & auditing
+**Limitations**:
+- Weak identity
+- Hard rotation
+- Often leaked
 
 ---
 
-## Next Lesson Preview
+## Password Security Basics
 
-### Next Video
+### Never Store Plaintext Passwords
 
-- Injection attacks explained
-- SQL injection demonstration
-- Why ORMs help but don’t solve everything
-- Fixing vulnerabilities properly
+Passwords must always be:
 
+- **Hashed**: Converted into a one-way mathematical value that cannot be reversed.
+- **Salted**: Random data added before hashing to prevent duplicate and precomputed attacks.
+- **Stored securely**: Saved with restricted access and encryption, never as raw passwords.
+
+Never reversible.
+
+---
+
+## Hashing vs Encryption
+
+- Hashing → One-way
+- Encryption → Two-way
+
+Passwords should be hashed, not encrypted.
+
+---
+
+## Common Hash Algorithms
+
+**Secure**:
+- bcrypt
+- Argon2
+- scrypt
+
+**Avoid**:
+- MD5
+- SHA1
+
+---
+
+## Password Attacks
+
+Attackers attempt:
+
+- **Brute force**: Trying many password combinations until the correct one is found.
+- **Credential stuffing**: Using leaked username-password pairs from other sites.
+- **Rainbow tables**: Using precomputed hash databases to reverse weak hashes.
+- **Phishing**: Tricking users into revealing their credentials through fake interfaces.
+
+Defense requires layered protection.
+
+
+---
+
+## Token Fundamentals
+
+### What Is a Token?
+
+A token is a digital proof of authentication.
+
+It represents:
+
+- User identity
+- Claims
+- Expiration
+- Integrity
+
+### JWT Structure (Conceptual)
+
+- Header
+- Payload (claims)
+- Signature
+
+JWT is signed, not encrypted by default.
+
+---
+
+## Token Lifecycle
+
+1. User logs in.
+2. Server validates credentials.
+3. Token is issued.
+4. Client stores token.
+5. Token sent with each request.
+6. Token expires or revoked.
+
+---
+
+## Security Risks
+
+### Token Risks
+
+- **Token theft**: An attacker steals a valid token and uses it to impersonate a user.
+- **Token replay**: A captured token is reused to repeat authorized requests.
+- **Token leakage**: Tokens are accidentally exposed through logs, URLs, or client storage.
+- **Long expiration windows**: Stolen tokens remain valid for too long, increasing damage.
+
+---
+## Security Risks
+
+### Defending Against Token Risks
+
+- **Short token expiration**: Limits the damage window if a token is stolen.
+- **HTTPS everywhere**: Prevents interception and token theft in transit.
+- **Secure storage**: Never store tokens in URLs or insecure client storage.
+- **Token rotation & refresh**: Reduces reuse and replay risk.
+- **Audience and scope validation**: Ensures tokens are used only for intended services.
+- **Revocation and monitoring**: Detects and blocks suspicious token usage quickly.
+
+---
+
+## Security Risks
+
+### Password Risks
+
+- Weak passwords
+- Reuse across sites
+- Phishing
+- Database breaches
+
+### Transport Risks
+
+- Unencrypted traffic
+- Man-in-the-middle attacks
+
+---
+
+## Security vs Performance
+
+### Cost of Authentication
+
+- Password hashing CPU cost
+- Token validation overhead
+- Cryptographic operations
+
+### Why It's Worth It
+
+- Identity protection
+- Legal compliance
+- User trust
+- System integrity
+
+---
+
+## What We Will Do Practically
+
+### Next Video Plan
+
+1. Implement login endpoint.
+2. Store hashed passwords.
+3. Generate authentication token.
+4. Secure endpoints.
+5. Validate token on requests.
+6. Measure overhead.
+
+---
+
+## Key Takeaways
+
+- Authentication verifies identity.
+- Authorization controls access.
+- Tokens enable scalable APIs.
+- Passwords must be hashed securely.
+- Security requires layered defenses.
+
+```
