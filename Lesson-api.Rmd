@@ -256,6 +256,7 @@ JWT is signed, not encrypted by default.
 - **Long expiration windows**: Stolen tokens remain valid for too long, increasing damage.
 
 ---
+
 ## Security Risks
 
 ### Defending Against Token Risks
