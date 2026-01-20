@@ -1,5 +1,5 @@
 ---
-title: "REST API Design Fundamentals"
+title: "Authorization & Access Control: Controlling Who Can Do What in Your API"
 subtitle: "Building Secure, Scalable, Fault-Tolerant and Low-Latency APIs with Java & Spring Boot"
 author: "Ngane Emmanuel"
 date: "`r Sys.Date()`"
@@ -10,20 +10,17 @@ output:
 
 ## Lesson Context
 
-### Why API Design Comes First
+### Why Authorization Matters
 
-- API design defines how clients interact with your system.
-- Poor design causes:
-  - Confusing usage
-  - Security gaps
-  - Breaking changes
-  - Performance problems
-- Good design enables:
-  - Scalability
-  - Maintainability
-  - Evolvability
+Authentication verifies identity.  
+Authorization controls permissions.
 
-Design is an engineering decision, not aesthetics.
+A secure system must ensure:
+- Users can only access what they are allowed to.
+- Privileged operations are protected.
+- Data exposure is minimized.
+
+Most real-world breaches are authorization failures.
 
 ---
 
@@ -31,274 +28,180 @@ Design is an engineering decision, not aesthetics.
 
 By the end of this lesson:
 
-- Understand REST principles.
-- Learn how to structure endpoints.
-- Use HTTP methods correctly.
-- Understand API versioning.
-- Know how to pass data safely.
-- Avoid common mistakes.
+- Understand authorization concepts.
+- Learn access control models.
+- Identify common vulnerabilities.
+- Design secure permission systems.
+- Prepare for Spring Security implementation.
 
 ---
 
-## What Is REST?
+## What Is Authorization?
 
-### REST Definition
+### Definition
 
-REST stands for **Representational State Transfer**.
+Authorization determines what actions an authenticated user is allowed to perform.
 
-It is an architectural style for designing networked applications.
+It answers:
+> **"What can this user do?"**
 
-### REST Principles (High Level)
+### Authorization vs Authentication
 
-- Stateless communication
-- Resource-based URLs
-- Standard HTTP methods
-- Uniform interface
-- Cacheability
+- Authentication → Who you are
+- Authorization → What you can access
 
-REST improves scalability and simplicity.
+Authorization always happens after authentication.
 
 ---
 
-## Designing Resources
+## Permissions & Roles
 
-### Think in Resources, Not Actions
+### Permissions
 
-Bad:
-```json
+A permission represents an allowed action.
 
-/getUser
-/createOrder
-/deleteProduct
+Examples:
+- READ_USER
+- CREATE_ORDER
+- DELETE_PRODUCT
 
-```
+Permissions are fine-grained.
 
-Good:
-```json
+### Roles
 
-/users
-/orders
-/products
+A role groups permissions.
 
-```
+Examples:
+- ADMIN
+- USER
+- SUPPORT
 
-Use nouns, not verbs.
-
----
-
-## Resource Hierarchy
-
-**Examples**:
-
-```json
-
-/users
-/users/{id}
-/users/{id}/orders
-
-```
-
-Relationships should be expressed naturally.
+Roles simplify management.
 
 ---
 
-## HTTP Methods
+## Role Example
 
-### Common Methods
+ADMIN:
+- CREATE_USER
+- DELETE_USER
+- VIEW_REPORTS
 
-- **GET** → Retrieve data
-- **POST** → Create new resource
-- **PUT** → Replace resource
-- **PATCH** → Partial update
-- **DELETE** → Remove resource
-
-
-### Idempotency
-
-- GET → Idempotent
-- PUT → Idempotent
-- DELETE → Idempotent
-- POST → Not idempotent
-
-Important for retries and fault tolerance.
+USER:
+- VIEW_PROFILE
+- CREATE_ORDER
 
 ---
 
-## Passing Data in APIs
+## Access Control Models
 
-### Path Parameters
+### Role-Based Access Control (RBAC)
 
-Used to identify a specific resource.
+Users are assigned roles.
+Roles grant permissions.
 
-**Example**:
-```json
+Simple and widely used.
 
-GET /users/123
+### Attribute-Based Access Control (ABAC)
 
-```
+Decisions based on attributes:
+- User attributes
+- Resource attributes
+- Environment conditions
 
-Use when the value identifies the resource.
-
-
-### Query Parameters
-
-Used for filtering, sorting, pagination.
-
-**Example**:
-```json
-
-GET /users?role=admin&page=2
-
-```
-
-Do not use for sensitive data.
+More flexible, more complex.
 
 ---
 
-## Passing Data in APIs
+## Access Control Models
 
-### Request Body
+### Policy-Based Access Control
 
-Used to send complex data.
+Centralized policies define access rules.
+
+Used in large distributed systems.
+
+---
+
+## Where Authorization Happens
+
+### API Layers
+
+Authorization should occur:
+
+- At controller level (endpoint protection)
+- At service level (business rules)
+- Sometimes at database level
+
+Never trust client-side enforcement.
+
+---
+
+## Common Authorization Vulnerabilities
+
+### Broken Access Control
+
+Users access resources they should not.
+
+Examples:
+- Accessing another user's data
+- Calling admin endpoints
+
+
+### Insecure Direct Object Reference (IDOR)
+
+Manipulating IDs in URLs to access unauthorized data.
 
 Example:
-```json
-{
-  "name": "Alice",
-  "email": "alice@example.com"
-}
 ```
 
-Used mostly with POST, PUT, PATCH.
+/users/123 → /users/124
 
-### Headers
-
-Used for metadata:
-
-* Authentication
-* Content type
-* Correlation IDs
-
----
-
-## API Versioning
-
-### Why Versioning Matters
-
-* APIs evolve over time.
-* Clients depend on existing behavior.
-* Breaking changes must be managed safely.
-
----
-
-## Versioning Strategies
-
-- **URI Versioning**
-
-```json
-/api/v1/users
-```
-
-- **Header Versioning**
-
-```json
-Accept: application/vnd.company.v1+json
-```
-
-- **Query Versioning**
-
-```json
-/users?version=1
-```
-
-URI versioning is most common.
-
----
-
-## Versioning Best Practices
-
-* Only version breaking changes.
-* Avoid unnecessary versions.
-* Deprecate old versions gracefully.
-* Communicate clearly.
-
----
-
-## Status Codes & Errors
-
-### Use HTTP Status Codes Correctly
-
-* 200 → OK
-* 201 → Created
-* 400 → Bad Request
-* 401 → Unauthorized
-* 403 → Forbidden
-* 404 → Not Found
-* 500 → Server Error
-
-### Error Response Design
-
-Return structured errors:
-
-```json
-{
-  "error": "Invalid request",
-  "message": "Email is required"
-}
-```
-
-Avoid leaking internal details.
-
----
-
-## Pagination & Filtering
-
-### Avoid Large Responses
-
-Use pagination:
-
-```json
-GET /users?page=1&size=20
-```
-
-### Filtering & Sorting
-
-```json
-GET /orders?status=PAID&sort=date
 ```
 
 ---
 
-## Common Design Mistakes
+## Common Authorization Vulnerabilities
 
-* Using verbs in URLs
-* Ignoring HTTP status codes
-* Overloading endpoints
-* Breaking clients unintentionally
-* Mixing responsibilities
-* Inconsistent naming
+### Over-Privileged Roles
+
+Users receive more permissions than needed.
+
+Violates least privilege principle.
 
 ---
 
-## Design Enables Security & Performance
+## Authorization Best Practices
 
-### Why This Matters Later
+### Defense Strategies
 
-Good design:
+- Enforce least privilege
+- Validate ownership
+- Use centralized policies
+- Log authorization failures
+- Perform regular audits
 
-* Simplifies authentication
-* Enables caching
-* Improves monitoring
-* Reduces attack surface
-* Enables scalability
+---
+
+## Design for Scalability
+
+### Future Growth
+
+Authorization systems must:
+- Support new roles
+- Support new permissions
+- Avoid hardcoded logic
+
+Design early.
 
 ---
 
 ## What Comes Next
 
-### Next Lesson
+### Practical Implementation
 
-* Build a basic Spring Boot API
-* Apply these design principles
-* Create clean endpoints
-* Prepare for security hardening
+- Implement role-based access in Spring Boot
+- Protect endpoints
+- Demonstrate IDOR attack
+- Apply fixes
+```
