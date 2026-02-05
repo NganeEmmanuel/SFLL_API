@@ -26,6 +26,8 @@ public class User {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "role", nullable = false)
+    private String role = "USER";
 
     //constructors
 
