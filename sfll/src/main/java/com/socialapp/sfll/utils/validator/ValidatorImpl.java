@@ -1,4 +1,4 @@
-package com.socialapp.sfll.utils;
+package com.socialapp.sfll.utils.validator;
 
 import com.socialapp.sfll.exceptions.ValidationException;
 import org.springframework.stereotype.Component;

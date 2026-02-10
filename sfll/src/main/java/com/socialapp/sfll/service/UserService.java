@@ -6,7 +6,7 @@ import com.socialapp.sfll.exceptions.UserNotFoundException;
 import com.socialapp.sfll.mapper.Mapper;
 import com.socialapp.sfll.model.User;
 import com.socialapp.sfll.repository.ORMUserRopository;
-import com.socialapp.sfll.utils.Validator;
+import com.socialapp.sfll.utils.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

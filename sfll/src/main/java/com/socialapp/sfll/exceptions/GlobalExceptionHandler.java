@@ -12,11 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@SuppressWarnings("unused")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String hadleValidationException(ValidationException ex, WebRequest request) {
+    public String handleValidationException(ValidationException ex, WebRequest request) {
         return ex.getMessage();
     }
 
@@ -46,14 +47,26 @@ public class GlobalExceptionHandler {
 
         ex.getBindingResult()
                 .getFieldErrors()
-                .forEach(error -> {
-                    errors.put(
-                            error.getField(),
-                            error.getDefaultMessage()
-                    );
-                });
+                .forEach(error -> errors.put(
+                        error.getField(),
+                        error.getDefaultMessage()
+                ));
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<?> handleAuthException(AuthException e, WebRequest request) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(RateLimitException.class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public String handleRateLimitException(RateLimitException ex, WebRequest request) {
+        return ex.getMessage();
     }
 
     @ExceptionHandler(RuntimeException.class)
