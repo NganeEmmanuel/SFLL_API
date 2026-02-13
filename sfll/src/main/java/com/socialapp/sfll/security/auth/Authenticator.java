@@ -1,7 +1,6 @@
 package com.socialapp.sfll.security.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
 
 /**
  * Authenticator Interface.

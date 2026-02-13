@@ -3,7 +3,9 @@ package com.socialapp.sfll.security.auth.jwt;
 import com.socialapp.sfll.security.auth.AuthResult;
 import com.socialapp.sfll.security.auth.AuthUser;
 import com.socialapp.sfll.security.auth.Authenticator;
+import com.socialapp.sfll.security.auth.jwt.dto.JwtUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -16,7 +18,10 @@ import java.util.Set;
  * header of the request.
  */
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticator implements Authenticator {
+
+    private final JwtTokenParser parser;
 
     /**
      * Checks if JWT authentication is supported for the given request.
@@ -38,16 +43,26 @@ public class JwtAuthenticator implements Authenticator {
      */
     @Override
     public AuthResult authenticate(HttpServletRequest request) {
+
+        // extract the token from the header
         String token = request.getHeader("Authorization").substring(7);
 
-        // TODO: Replace with real JWT validation later
-        if ("valid-jwt-token".equals(token)) {
-            return new AuthResult(
-                    true,
-                    new AuthUser(1, Set.of("USER"))
-            );
+        // validate the token
+        if (!parser.isValid(token)) {
+            return new AuthResult(false, null);
         }
 
-        return new AuthResult(false, null);
+        // create jwt user details
+        JwtUserDetails user = parser.extractUser(token);
+
+        // convert to AuthUser
+        AuthUser authUser = new AuthUser(
+                user.id(),
+                user.username(),
+                Set.copyOf(user.roles())
+        );
+
+        // return successful authentication result
+        return new AuthResult(true, authUser);
     }
 }

@@ -25,6 +25,8 @@ public class InMemoryRateLimiter implements RateLimiter {
     @Override
     public boolean allowRequest(String key) {
 
+        // check blacklist, etc. here if needed
+        // if present in blacklist, return false immediately
         Bucket bucket = buckets.computeIfAbsent(key, k -> {
             Bucket b = new Bucket();
             b.tokens = capacity;

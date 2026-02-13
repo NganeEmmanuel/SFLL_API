@@ -15,8 +15,8 @@ public class ApiKeyAuthenticator implements Authenticator {
 
     // Demo storage (replace with DB/Redis later)
     private static final Map<String, AuthUser> API_KEYS = Map.of(
-            "abc123", new AuthUser(10, Set.of("SERVICE")),
-            "xyz789", new AuthUser(20, Set.of("PARTNER"))
+            "abc123", new AuthUser(10L, "EmLmt", Set.of("SERVICE")),
+            "xyz789", new AuthUser(20L, "blmt", Set.of("PARTNER"))
     );
 
     @Override

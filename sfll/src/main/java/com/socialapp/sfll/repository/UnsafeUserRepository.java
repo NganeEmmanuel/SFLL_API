@@ -24,7 +24,7 @@ public class UnsafeUserRepository {
                 + user.getPassword() + "')";
 
         var id = entityManager.createNativeQuery(sql).executeUpdate();
-        user.setId(id);
+        user.setId((long) id);
         return user;
     }
 

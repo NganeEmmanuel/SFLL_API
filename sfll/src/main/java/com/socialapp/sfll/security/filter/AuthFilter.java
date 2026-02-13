@@ -6,27 +6,29 @@ import com.socialapp.sfll.security.context.AuthContext;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("NullableProblems")
 @RequiredArgsConstructor
-public class AuthFilter implements Filter {
+@Component
+public class AuthFilter extends OncePerRequestFilter {
 
     private final List<Authenticator> authenticators;
 
     @Override
-    public void doFilter(
-            ServletRequest req,
-            ServletResponse res,
-            FilterChain chain
-    ) throws IOException, ServletException {
-
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         for (Authenticator auth : authenticators) {
 
+            // strategy pattern: each authenticator checks if it supports the request
             if (!auth.supports(request)) {
                 continue;
             }
@@ -37,7 +39,7 @@ public class AuthFilter implements Filter {
 
                 try {
                     AuthContext.set(result);
-                    chain.doFilter(req, res);
+                    filterChain.doFilter(request, response);
                 } finally {
                     AuthContext.clear();
                 }

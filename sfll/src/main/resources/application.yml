@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: sfll
+  datasource:
+    url: jdbc:mysql://localhost:3306/sfll_db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: Test123$
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8081
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:lzIuoXEJ6WJ2clEEGoBEx2fuSefyif0TVVYppQQNJUl}
+    issuer: socialapp-api
+    access-token-ttl: 15m
+    refresh-token-ttl: 7d

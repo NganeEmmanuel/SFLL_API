@@ -1,6 +1,6 @@
 package com.socialapp.sfll.dto;
 
-import com.socialapp.sfll.validator.NotContainsSpecialChar;
+import com.socialapp.sfll.annotation.NotContainsSpecialChar;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

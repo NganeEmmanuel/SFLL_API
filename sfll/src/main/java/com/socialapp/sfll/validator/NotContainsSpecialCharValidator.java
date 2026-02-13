@@ -1,5 +1,6 @@
 package com.socialapp.sfll.validator;
 
+import com.socialapp.sfll.annotation.NotContainsSpecialChar;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;

@@ -6,24 +6,23 @@ import com.socialapp.sfll.ratelimit.RateLimiter;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class RateLimitFilter implements Filter {
+@SuppressWarnings("NullableProblems")
+public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimiter limiter;
 
+
     @Override
-    public void doFilter(
-            ServletRequest req,
-            ServletResponse res,
-            FilterChain chain
-    ) throws IOException, ServletException {
-
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
-
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
         String key = resolveKey(request);
 
         if (!limiter.allowRequest(key)) {
@@ -41,7 +40,7 @@ public class RateLimitFilter implements Filter {
             return;
         }
 
-        chain.doFilter(req, res);
+        filterChain.doFilter(request, response);
     }
 
     private String resolveKey(HttpServletRequest request) {

@@ -1,5 +1,6 @@
-package com.socialapp.sfll.validator;
+package com.socialapp.sfll.annotation;
 
+import com.socialapp.sfll.validator.NotContainsSpecialCharValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
