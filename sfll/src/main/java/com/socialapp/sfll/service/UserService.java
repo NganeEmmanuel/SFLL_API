@@ -1,39 +1,52 @@
 package com.socialapp.sfll.service;
 
+import com.socialapp.sfll.annotation.RequireRole;
+import com.socialapp.sfll.dto.RegisterUser;
 import com.socialapp.sfll.dto.UpdateRequest;
 import com.socialapp.sfll.exceptions.UserNotAuthorizedException;
 import com.socialapp.sfll.exceptions.UserNotFoundException;
 import com.socialapp.sfll.mapper.Mapper;
 import com.socialapp.sfll.model.User;
 import com.socialapp.sfll.repository.ORMUserRopository;
+import com.socialapp.sfll.security.auth.AuthUser;
+import com.socialapp.sfll.security.auth.jwt.JwtTokenProvider;
+import com.socialapp.sfll.security.auth.jwt.dto.JwtToken;
 import com.socialapp.sfll.utils.validator.Validator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Service
 @SuppressWarnings("unused")
+@RequiredArgsConstructor
 public class UserService {
 //    @Autowired
 //    private UnsafeUserRepository userRepository;
 
-    @Autowired
-    private ORMUserRopository ormUserRepository;
+    private final ORMUserRopository ormUserRepository;
 
-    @Autowired
-    @Qualifier("userMapper")
-    private Mapper<User, UpdateRequest> userMapper;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private Validator validator;
+    private final Mapper<User, UpdateRequest> userMapper;
 
-    public User register(User user) {
+    private final Mapper<User, RegisterUser> RegisterUserMapper;
+
+    private final Validator validator;
+
+    @Transactional
+    public JwtToken register(RegisterUser registerUser) {
         // Implement registration logic here (e.g., save user to database
-        user.setRole("USER");
-        return ormUserRepository.save(user); // Return the registered user
+
+        User user = User.builder().role("USER").build();
+        RegisterUserMapper.toEntity(user, registerUser);
+        ormUserRepository.save(user); // Return the registered user
+        AuthUser authUser = new AuthUser(user.getId(), user.getUsername(), Set.of(user.getRole()));
+        return  jwtTokenProvider.generateTokens(authUser);
+
     }
 
     public User loginWithOrm(String username, String password) {
@@ -51,6 +64,7 @@ public class UserService {
 
     }
 
+    @RequireRole("ADMIN")
     public User updateUser(UpdateRequest request) {
         // find user by id
         var dbuser = ormUserRepository.findById(request.getId());
@@ -69,6 +83,13 @@ public class UserService {
         }catch(Exception e) {
             throw new RuntimeException("Error occurred while updating user: ");
         }
+    }
+
+    @Transactional
+    public void exc(){
+        updateUser(new UpdateRequest());
+        // other methods 1
+        // other methods 2
     }
 
     public List<User> getUsers(User user) {

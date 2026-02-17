@@ -1,7 +1,9 @@
 package com.socialapp.sfll.controller;
 
+import com.socialapp.sfll.dto.RegisterUser;
 import com.socialapp.sfll.dto.UpdateRequest;
 import com.socialapp.sfll.model.User;
+import com.socialapp.sfll.security.auth.jwt.dto.JwtToken;
 import com.socialapp.sfll.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/private/v1/users")
+@RequestMapping("/api/public/v1/users")
 public class UserController {
     @Autowired
     private UserService userService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public User register(@RequestBody User user) {
+    public JwtToken register(@RequestBody RegisterUser user) {
         return userService.register(user);
     }
 

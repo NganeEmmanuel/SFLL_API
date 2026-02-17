@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,9 @@ public class JwtTokenParser {
 
     public JwtTokenParser(JwtProperties props) {
         this.props = props;
-        this.key = Keys.hmacShaKeyFor(props.getSecret().getBytes());
+        byte[] decodedKey = Base64.getDecoder().decode(props.getSecret());
+
+        this.key = Keys.hmacShaKeyFor(decodedKey);
     }
 
     /**
@@ -37,7 +40,6 @@ public class JwtTokenParser {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .requireIssuer(props.getIssuer())
-                .requireExpiration(Date.from(java.time.Instant.now())) // Ensure the token is not expired
                 .build()
                 .parseClaimsJws(token);
     }
@@ -55,6 +57,10 @@ public class JwtTokenParser {
         // Attempt to parse the token. If parsing fails, it will throw a JwtException, which we catch to return false.
         try {
             parse(token);
+            // check for expiration, etc. here if needed
+            if(parse(token).getBody().getExpiration().before(new Date())){
+                return false;
+            }
             return true;
         } catch (JwtException e) {
             return false;

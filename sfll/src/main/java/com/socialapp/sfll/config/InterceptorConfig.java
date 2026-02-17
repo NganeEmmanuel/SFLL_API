@@ -27,6 +27,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(new RoleInterceptor("ADMIN"))
                 .addPathPatterns("/api/admin/**");
 
+        registry.addInterceptor(new UpdatePathInterceptor())
+                .addPathPatterns("/api/public/v1/users/update");
+
         // Add FileUploadInterceptor to handle file upload routes
         registry.addInterceptor(new FileUploadInterceptor())
                 .addPathPatterns("/api/files/**");

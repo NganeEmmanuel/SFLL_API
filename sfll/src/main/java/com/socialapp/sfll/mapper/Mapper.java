@@ -6,7 +6,7 @@ package com.socialapp.sfll.mapper;
  * @param <U> DTO Type
  */
 public interface Mapper<T, U> {
-    void toDto(T entity);
+    U toDto(T entity);
     void toEntity(T t, U dto);
 
 }

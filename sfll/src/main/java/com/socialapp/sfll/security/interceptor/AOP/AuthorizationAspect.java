@@ -18,7 +18,7 @@ public class AuthorizationAspect {
         AuthResult auth = AuthContext.get();
 
         if (auth == null || !auth.getAuth().hasRole(requireRole.value())) {
-            throw new ForbiddenException("Authorization Required");
+            throw new ForbiddenException("Authorization Required need roles ADMIN");
         }
     }
 }

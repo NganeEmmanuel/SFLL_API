@@ -39,6 +39,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
                 try {
                     AuthContext.set(result);
+                    var authU = AuthContext.get();
                     filterChain.doFilter(request, response);
                 } finally {
                     AuthContext.clear();

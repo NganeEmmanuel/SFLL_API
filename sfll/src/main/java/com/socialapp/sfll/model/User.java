@@ -1,10 +1,9 @@
 package com.socialapp.sfll.model;
 
+import com.socialapp.sfll.annotation.AnnotaionImpl.EncryptionListener;
+import com.socialapp.sfll.annotation.Encrypted;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -12,6 +11,8 @@ import lombok.ToString;
 @Data
 @ToString
 @Table(name = "users")
+@Builder
+@EntityListeners(EncryptionListener.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,8 @@ public class User {
     private String username;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Encrypted // encrypts password if not encrypted
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "role", nullable = false)

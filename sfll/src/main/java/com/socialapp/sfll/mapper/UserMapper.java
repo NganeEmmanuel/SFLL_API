@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 @Service(value = "userMapper")
 public class UserMapper implements Mapper<User, UpdateRequest>{
     @Override
-    public void toDto(User entity) {
+    public UpdateRequest toDto(User entity) {
+        return null;
     }
 
     @Override
