@@ -1,5 +1,5 @@
 ---
-title: "Authorization & Access Control: Controlling Who Can Do What in Your API"
+title: "Transport & Network Security: HTTPS & TLS"
 subtitle: "Building Secure, Scalable, Fault-Tolerant and Low-Latency APIs with Java & Spring Boot"
 author: "Ngane Emmanuel"
 date: "`r Sys.Date()`"
@@ -8,200 +8,452 @@ output:
     slide_level: 2
 ---
 
-## Lesson Context
+## Lesson Overview
 
-### Why Authorization Matters
+### In This Lesson, We Will Learn:
 
-Authentication verifies identity.  
-Authorization controls permissions.
-
-A secure system must ensure:
-- Users can only access what they are allowed to.
-- Privileged operations are protected.
-- Data exposure is minimized.
-
-Most real-world breaches are authorization failures.
+- Why HTTP is dangerous
+- How MITM attacks work
+- What HTTPS and TLS really do
+- How certificates create trust
+- TLS in real-world systems
+- Performance and latency tradeoffs
 
 ---
 
-## Learning Objectives
+## Why HTTP Is Dangerous
 
-By the end of this lesson:
+### HTTP = Plain Text Communication
 
-- Understand authorization concepts.
-- Learn access control models.
-- Identify common vulnerabilities.
-- Design secure permission systems.
-- Prepare for Spring Security implementation.
+When using HTTP:
 
----
-
-## What Is Authorization?
-
-### Definition
-
-Authorization determines what actions an authenticated user is allowed to perform.
-
-It answers:
-> **"What can this user do?"**
-
-### Authorization vs Authentication
-
-- Authentication → Who you are
-- Authorization → What you can access
-
-Authorization always happens after authentication.
-
----
-
-## Permissions & Roles
-
-### Permissions
-
-A permission represents an allowed action.
-
-Examples:
-- READ_USER
-- CREATE_ORDER
-- DELETE_PRODUCT
-
-Permissions are fine-grained.
-
-### Roles
-
-A role groups permissions.
-
-Examples:
-- ADMIN
-- USER
-- SUPPORT
-
-Roles simplify management.
-
----
-
-## Role Example
-
-ADMIN:
-- CREATE_USER
-- DELETE_USER
-- VIEW_REPORTS
-
-USER:
-- VIEW_PROFILE
-- CREATE_ORDER
-
----
-
-## Access Control Models
-
-### Role-Based Access Control (RBAC)
-
-Users are assigned roles.
-Roles grant permissions.
-
-Simple and widely used.
-
-### Attribute-Based Access Control (ABAC)
-
-Decisions based on attributes:
-- User attributes
-- Resource attributes
-- Environment conditions
-
-More flexible, more complex.
-
----
-
-## Access Control Models
-
-### Policy-Based Access Control
-
-Centralized policies define access rules.
-
-Used in large distributed systems.
-
----
-
-## Where Authorization Happens
-
-### API Layers
-
-Authorization should occur:
-
-- At controller level (endpoint protection)
-- At service level (business rules)
-- Sometimes at database level
-
-Never trust client-side enforcement.
-
----
-
-## Common Authorization Vulnerabilities
-
-### Broken Access Control
-
-Users access resources they should not.
-
-Examples:
-- Accessing another user's data
-- Calling admin endpoints
-
-
-### Insecure Direct Object Reference (IDOR)
-
-Manipulating IDs in URLs to access unauthorized data.
+- Data is sent without encryption
+- Anyone on the network can read it
+- Anyone can modify it
 
 Example:
+
+```{json}
+
+username=admin
+password=1234
+
 ```
 
-/users/123 → /users/124
+➡ Visible to attackers
+
+---
+
+## Man-in-the-Middle (MITM) Attacks
+
+### What is a MITM Attack?
+
+A Man-in-the-Middle attack happens when:
+
+```{json}
+
+Client → Attacker → Server
+
+```
+
+The attacker:
+
+- Reads sensitive data
+- Modifies requests
+- Steals credentials
+- Injects malware
+
+---
+
+## MITM Without HTTPS
+
+### Communication Over HTTP
+
+```{json}
+
+Client → Network → Server
+
+```
+
+Attackers can see:
+
+- Login credentials
+- Tokens
+- API data
+- Personal information
+
+Tools like **Wireshark** can capture this traffic.
+
+---
+
+## Introduction to HTTPS
+
+### What is HTTPS?
+
+HTTPS means:
+
+> HTTP + TLS (Transport Layer Security)
+
+TLS provides:
+
+- Encryption
+- Authentication
+- Data integrity
+
+Result:
+
+```{json}
+
+Client ⇄ Encrypted Tunnel ⇄ Server
 
 ```
 
 ---
 
-## Common Authorization Vulnerabilities
+## What is TLS?
 
-### Over-Privileged Roles
+### Transport Layer Security (TLS)
 
-Users receive more permissions than needed.
+TLS is a cryptographic protocol that:
 
-Violates least privilege principle.
+- Encrypts data in transit
+- Verifies server identity
+- Prevents tampering
 
----
+It works automatically once configured.
 
-## Authorization Best Practices
-
-### Defense Strategies
-
-- Enforce least privilege
-- Validate ownership
-- Use centralized policies
-- Log authorization failures
-- Perform regular audits
+Developers configure TLS — they do not implement crypto.
 
 ---
 
-## Design for Scalability
+## Digital Certificates
 
-### Future Growth
+### What is a Certificate?
 
-Authorization systems must:
-- Support new roles
-- Support new permissions
-- Avoid hardcoded logic
+A digital certificate is a:
 
-Design early.
+> Proof that a server owns a domain
+
+It contains:
+
+- Domain name
+- Public key
+- Issuer (CA)
+- Expiry date
+- Signature
 
 ---
 
-## What Comes Next
+## Certificate Authorities (CA)
 
-### Practical Implementation
+### Who Issues Certificates?
 
-- Implement role-based access in Spring Boot
-- Protect endpoints
-- Demonstrate IDOR attack
-- Apply fixes
+Trusted organizations called CAs:
+
+- Google
+- CloudFlare
+- AWS
+
+Browsers trust these authorities.
+
+---
+
+## TLS Handshake (Connection Process)
+
+### Step-by-Step TLS Handshake
+
+1. Client sends supported crypto methods
+2. Server sends certificate
+3. Browser verifies certificate
+4. Secure key exchange
+5. Encrypted session starts
+
+After this, all traffic is encrypted.
+
+---
+
+## Certificate Verification
+
+### How Browsers Check Certificates
+
+The browser verifies:
+
+- Is the CA trusted?
+- Is the domain correct?
+- Is it expired?
+- Is it revoked?
+
+If verification fails:
+
+❌ "Your connection is not private"
+
+---
+
+## How TLS Prevents MITM
+
+### Protection Mechanism
+
+With TLS:
+
+- Attacker cannot decrypt data
+- Fake servers are rejected
+- Modified packets are detected
+
+Attackers only see:
+
+```{json}
+
+Encrypted Application Data
+
 ```
+
+---
+
+## TLS in Real Production Systems
+
+### Typical Architecture
+
+```{json}
+
+Client → HTTPS → Edge Server → HTTP → Spring Boot
+
+```
+
+Edge Server Examples:
+
+- CDN
+- Load balancer
+- Reverse proxy
+
+TLS ends at the edge.
+
+This is called **TLS Termination**.
+
+---
+
+## Why TLS Ends at the Edge
+
+### Reasons
+
+- Better performance
+- Centralized certificate management
+- Easier scaling
+- Automatic renewal
+- Stronger security controls
+
+Most production apps do NOT handle TLS directly.
+
+---
+
+## TLS in Learning & Demo Systems
+
+### Direct TLS in Spring Boot
+
+For learning and demos:
+
+```{json}
+
+Client → HTTPS → Spring Boot
+
+```
+
+Spring Boot handles TLS.
+
+This is useful for:
+
+- Teaching
+- Testing
+- Small deployments
+- Local development
+
+---
+
+## Enabling HTTPS in Spring Boot
+
+### Basic Configuration
+
+```{properties}
+server.port=8443
+server.ssl.enabled=true
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-password=secret
+server.ssl.key-store-type=PKCS12
+```
+
+This activates HTTPS.
+
+---
+
+## Enforcing Secure Connections
+
+### Force HTTPS with Spring Security
+
+```{java}
+http.requiresChannel()
+    .anyRequest()
+    .requiresSecure();
+```
+
+Prevents HTTP downgrade attacks.
+
+---
+
+## TLS and Application Security
+
+### Security Layer Stack
+
+```{json}
+TLS
+ → Authentication
+   → Authorization
+     → Validation
+       → Business Logic
+```
+
+TLS protects data in transit.
+
+It does NOT replace authentication.
+
+---
+
+## Common Developer Mistakes
+
+### Frequent Errors
+
+* Expired certificates
+* Weak TLS versions
+* Mixed HTTP/HTTPS content
+* Self-signed certs in production
+* Missing Secure cookie flag
+* No HTTPS redirection
+
+These cause security failures.
+
+---
+
+## Demo: MITM Without HTTPS
+
+### HTTP Traffic Capture
+
+1. Disable SSL
+2. Run app on HTTP
+3. Capture traffic
+4. Inspect packets
+
+Result:
+
+✔ Passwords visible
+✔ Tokens readable
+✔ MITM successful
+
+---
+
+## Demo: MITM With HTTPS
+
+### HTTPS Traffic Capture
+
+1. Enable SSL
+2. Run app on HTTPS
+3. Capture traffic
+4. Inspect packets
+
+Result:
+
+❌ Data unreadable
+❌ Encrypted content
+✔ MITM prevented
+
+---
+
+## Advanced: Proxy-Based MITM
+
+### Fake Certificate Attacks
+
+Attackers may install fake certificates.
+
+Then:
+
+```{json}
+Client → Proxy → Server
+```
+
+Proxy decrypts traffic.
+
+Lesson:
+
+> TLS works only when trust is protected.
+
+---
+
+## TLS and Performance
+
+### Latency Tradeoffs
+
+TLS adds:
+
+* Handshake delay
+* CPU encryption cost
+
+Modern TLS:
+
+* TLS 1.3
+* Session reuse
+* Hardware acceleration
+
+Performance impact is minimal today.
+
+Never sacrifice security for speed.
+
+---
+
+## HTTP vs HTTPS Comparison
+
+| Feature         | HTTP | HTTPS |
+| --------------- | ---- | ----- |
+| Encryption      | ❌ No | ✅ Yes |
+| MITM Protection | ❌ No | ✅ Yes |
+| Trust           | ❌ No | ✅ Yes |
+| Compliance      | ❌ No | ✅ Yes |
+
+HTTPS is mandatory in modern systems.
+
+---
+
+## Best Practices
+
+### Recommended Practices
+
+* Use TLS 1.2 / 1.3 only
+* Automate certificate renewal
+* Enable HSTS
+* Enforce HTTPS redirects
+* Secure cookies
+* Monitor certificate expiry
+* Terminate TLS at edge in production
+
+---
+
+## Key Takeaways
+
+### What You Must Remember
+
+* HTTPS = HTTP + TLS
+* Certificates create trust
+* TLS prevents MITM
+* Production uses edge termination
+* Learning uses direct TLS
+* Security is layered
+
+> HTTPS is not optional.
+
+---
+
+## Next Lesson
+
+### Coming Up Next
+
+* Practical Demo of MITM with Wireshark
+
+Prepare for infrastructure-level defense.
+
+---
